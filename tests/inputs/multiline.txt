@@ -1,0 +1,14 @@
+hello
+a
+ab
+abc
+abcd
+abcde
+this is a sentence with the.the
+oneword
+split
+across
+lines
+character with 2 		tabs
+!@#$%^&*()
+0123456789

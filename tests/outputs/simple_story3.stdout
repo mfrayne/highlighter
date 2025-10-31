@@ -1,0 +1,20 @@
+The|[0;34m [0m|quick|[0;34m [0m|brown|[0;34m [0m|fox|[0;34m [0m|jumps|[0;34m [0m|over|[0;34m [0m|the|[0;34m [0m|lazy|[0;34m [0m|dog
+This|[0;34m [0m|is|[0;34m [0m|a|[0;34m [0m|long|[0;34m [0m|paragraph|[0;34m [0m|that|[0;34m [0m|contains|[0;34m [0m|multiple|[0;34m [0m|sentences.
+Each|[0;34m [0m|sentence|[0;34m [0m|will|[0;34m [0m|be|[0;34m [0m|tested|[0;34m [0m|for|[0;34m [0m|highlighting|[0;34m [0m|specific|[0;34m [0m|words.
+Error|[0;34m [0m|messages|[0;34m [0m|should|[0;34m [0m|stand|[0;34m [0m|out|[0;34m [0m|clearly.
+Warning|[0;34m [0m|signs|[0;34m [0m|must|[0;34m [0m|be|[0;34m [0m|visible.
+The|[0;34m [0m|program|[0;34m [0m|should|[0;34m [0m|handle|[0;34m [0m|multiple|[0;34m [0m|lines|[0;34m [0m|correctly.
+file|[0;34m [0m|system|[0;34m [0m|operations|[0;34m [0m|are|[0;34m [0m|important
+Each|[0;34m [0m|line|[0;34m [0m|of|[0;34m [0m|this|[0;34m [0m|file|[0;34m [0m|is|[0;34m [0m|part|[0;34m [0m|of|[0;34m [0m|a|[0;34m [0m|larger|[0;34m [0m|context.
+Debugging|[0;34m [0m|is|[0;34m [0m|an|[0;34m [0m|essential|[0;34m [0m|skill.
+Testing|[0;34m [0m|helps|[0;34m [0m|ensure|[0;34m [0m|quality.
+Another|[0;34m [0m|line|[0;34m [0m|with|[0;34m [0m|important|[0;34m [0m|keywords.
+Many|[0;34m [0m|programming|[0;34m [0m|errors|[0;34m [0m|occur|[0;34m [0m|due|[0;34m [0m|to|[0;34m [0m|simple|[0;34m [0m|mistakes.
+This|[0;34m [0m|is|[0;34m [0m|a|[0;34m [0m|longer|[0;34m [0m|file|[0;34m [0m|with|[0;34m [0m|many|[0;34m [0m|lines|[0;34m [0m|of|[0;34m [0m|text.
+The|[0;34m [0m|highlighter|[0;34m [0m|should|[0;34m [0m|work|[0;34m [0m|correctly|[0;34m [0m|with|[0;34m [0m|files|[0;34m [0m|of|[0;34m [0m|various|[0;34m [0m|sizes.
+Multiple|[0;34m [0m|occurrences|[0;34m [0m|of|[0;34m [0m|the|[0;34m [0m|same|[0;34m [0m|word|[0;34m [0m|should|[0;34m [0m|all|[0;34m [0m|be|[0;34m [0m|highlighted.
+attention|[0;34m [0m|to|[0;34m [0m|detail|[0;34m [0m|matters
+implementation|[0;34m [0m|details|[0;34m [0m|are|[0;34m [0m|crucial
+several|[0;34m [0m|lines|[0;34m [0m|with|[0;34m [0m|various|[0;34m [0m|content
+I|[0;34m [0m|am|[0;34m [0m|running|[0;34m [0m|out|[0;34m [0m|of|[0;34m [0m|things|[0;34m [0m|to|[0;34m [0m|say
+The|[0;34m [0m|end|[0;34m [0m|of|[0;34m [0m|this|[0;34m [0m|test|[0;34m [0m|file.

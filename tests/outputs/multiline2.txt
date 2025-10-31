@@ -1,0 +1,14 @@
+hello
+a
+ab
+abc
+abcd
+abcde
+this is a sentence with the.the
+oneword
+split
+across
+lines
+character with \[0;31m2[0m/ 		tabs
+!@#$%^&*()
+01\[0;31m2[0m/3456789

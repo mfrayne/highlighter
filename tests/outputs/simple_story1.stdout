@@ -1,0 +1,20 @@
+The quick brown fox jumps over the lazy dog
+This is a long paragraph that contains multiple sentences.
+Each sentence will be tested for highlighting specific words.
+Error messages should st[0;31man[0md out clearly.
+Warning signs must be visible.
+The program should h[0;31man[0mdle multiple lines correctly.
+file system operations are import[0;31man[0mt
+Each line of this file is part of a larger context.
+Debugging is [0;31man[0m essential skill.
+Testing helps ensure quality.
+Another line with import[0;31man[0mt keywords.
+M[0;31man[0my programming errors occur due to simple mistakes.
+This is a longer file with m[0;31man[0my lines of text.
+The highlighter should work correctly with files of various sizes.
+Multiple occurrences of the same word should all be highlighted.
+attention to detail matters
+implementation details are crucial
+several lines with various content
+I am running out of things to say
+The end of this test file.

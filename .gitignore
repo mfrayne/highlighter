@@ -1,0 +1,5 @@
+highlighter
+stdout.tmp
+stderr.tmp
+out.txt
+*.log

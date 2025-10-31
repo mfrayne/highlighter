@@ -1,0 +1,77 @@
+# invalid inputs
+# run the program, discard STDOUT, read 7 chars of STDERR and make sure it is "Error: " (the rest doesnt matter). Also make sure they never create an output file.
+# 15 Section
+./highlighter                           2>&1 1> /dev/null | head -c 7 | diff - tests/outputs/error.txt && [ ! -e out.txt ]
+./highlighter "hi" "bye"                2>&1 1> /dev/null | head -c 7 | diff - tests/outputs/error.txt && [ ! -e out.txt ]
+./highlighter "hi" -i                   2>&1 1> /dev/null | head -c 7 | diff - tests/outputs/error.txt && [ ! -e out.txt ]
+./highlighter -i aasdasdasd "hi"        2>&1 1> /dev/null | head -c 7 | diff - tests/outputs/error.txt && [ ! -e out.txt ]
+./highlighter -i -c RED "hi"            2>&1 1> /dev/null | head -c 7 | diff - tests/outputs/error.txt && [ ! -e out.txt ]
+./highlighter "hi" -o                   2>&1 1> /dev/null | head -c 7 | diff - tests/outputs/error.txt && [ ! -e out.txt ]
+./highlighter -o -i aasdasdasd "hi"     2>&1 1> /dev/null | head -c 7 | diff - tests/outputs/error.txt && [ ! -e out.txt ]
+./highlighter "hi" -c                   2>&1 1> /dev/null | head -c 7 | diff - tests/outputs/error.txt && [ ! -e out.txt ]
+./highlighter -c RD "hi"                2>&1 1> /dev/null | head -c 7 | diff - tests/outputs/error.txt && [ ! -e out.txt ]
+./highlighter -c -i highlighter.c "hi"  2>&1 1> /dev/null | head -c 7 | diff - tests/outputs/error.txt && [ ! -e out.txt ]
+./highlighter --prefix                  2>&1 1> /dev/null | head -c 7 | diff - tests/outputs/error.txt && [ ! -e out.txt ]
+./highlighter --prefix "hi"             2>&1 1> /dev/null | head -c 7 | diff - tests/outputs/error.txt && [ ! -e out.txt ]
+./highlighter "hi" --prefix             2>&1 1> /dev/null | head -c 7 | diff - tests/outputs/error.txt && [ ! -e out.txt ]
+./highlighter --postfix                 2>&1 1> /dev/null | head -c 7 | diff - tests/outputs/error.txt && [ ! -e out.txt ]
+./highlighter --postfix "hi"            2>&1 1> /dev/null | head -c 7 | diff - tests/outputs/error.txt && [ ! -e out.txt ]
+./highlighter --postfix --prefix        2>&1 1> /dev/null | head -c 7 | diff - tests/outputs/error.txt && [ ! -e out.txt ]
+./highlighter -o out.txt -c RD "hi"     2>&1 1> /dev/null | head -c 7 | diff - tests/outputs/error.txt && [ ! -e out.txt ]
+./highlighter -o out.txt -c RED ""      2>&1 1> /dev/null | head -c 7 | diff - tests/outputs/error.txt && [ ! -e out.txt ]
+
+# help inputs (make sure something is printed to stdout, no stderr, no output files (even if specified))
+# 5 Section
+./highlighter -h                                         1> /tmp/stdout.tmp 2> /tmp/stderr.tmp ; [ -s /tmp/stdout.tmp ] && [ ! -s /tmp/stderr.tmp ] && [ ! -e out.txt ]
+./highlighter --help                                     1> /tmp/stdout.tmp 2> /tmp/stderr.tmp ; [ -s /tmp/stdout.tmp ] && [ ! -s /tmp/stderr.tmp ] && [ ! -e out.txt ]
+./highlighter --help -i tests/inputs/aaa.txt -o out.txt  1> /tmp/stdout.tmp 2> /tmp/stderr.tmp ; [ -s /tmp/stdout.tmp ] && [ ! -s /tmp/stderr.tmp ] && [ ! -e out.txt ]
+
+# actual inputs
+# 65 Section
+./highlighter -i tests/inputs/simple.txt "hello" 1> /tmp/stdout.tmp 2> /tmp/stderr.tmp ; diff /tmp/stdout.tmp tests/outputs/simple1.stdout && diff /tmp/stderr.tmp tests/outputs/matches/1.txt && [ ! -e out.txt ]
+./highlighter -i tests/inputs/simple.txt -c GREEN "world" -o out.txt 1> /tmp/stdout.tmp 2> /tmp/stderr.tmp ; [ ! -s /tmp/stdout.tmp ] && diff /tmp/stderr.tmp tests/outputs/matches/1.txt && diff out.txt tests/outputs/simple2.txt
+cat tests/inputs/simple.txt | ./highlighter -c BLUE "hello world" 1> /tmp/stdout.tmp 2> /tmp/stderr.tmp ; diff /tmp/stdout.tmp tests/outputs/simple3.stdout && diff /tmp/stderr.tmp tests/outputs/matches/1.txt && [ ! -e out.txt ]
+cat tests/inputs/simple.txt | ./highlighter --prefix "(" --postfix ")" "hello worldddd" -o out.txt 1> /tmp/stdout.tmp 2> /tmp/stderr.tmp ; [ ! -s /tmp/stdout.tmp ] && diff /tmp/stderr.tmp tests/outputs/matches/0.txt && diff out.txt tests/inputs/simple.txt
+./highlighter -i tests/inputs/simple.txt "o" 1> /tmp/stdout.tmp 2> /tmp/stderr.tmp ; diff /tmp/stdout.tmp tests/outputs/simple5.stdout && diff /tmp/stderr.tmp tests/outputs/matches/2.txt && [ ! -e out.txt ]
+./highlighter -i tests/inputs/simple.txt --no-color "o" 1> /tmp/stdout.tmp 2> /tmp/stderr.tmp ; diff /tmp/stdout.tmp tests/outputs/simple6.stdout && diff /tmp/stderr.tmp tests/outputs/matches/2.txt && [ ! -e out.txt ]
+./highlighter -i tests/inputs/simple.txt "o" --prefix "(" --postfix ")" 1> /tmp/stdout.tmp 2> /tmp/stderr.tmp ; diff /tmp/stdout.tmp tests/outputs/simple7.stdout && diff /tmp/stderr.tmp tests/outputs/matches/2.txt && [ ! -e out.txt ]
+./highlighter -i tests/inputs/empty.txt "none" 1> /tmp/stdout.tmp 2> /tmp/stderr.tmp ; diff /tmp/stdout.tmp tests/inputs/empty.txt && diff /tmp/stderr.tmp tests/outputs/matches/0.txt && [ ! -e out.txt ]
+./highlighter -i tests/inputs/empty.txt --no-color "hello" -o out.txt 1> /tmp/stdout.tmp 2> /tmp/stderr.tmp ; [ ! -s /tmp/stdout.tmp ] && diff /tmp/stderr.tmp tests/outputs/matches/0.txt && diff out.txt tests/inputs/empty.txt
+cat tests/inputs/empty.txt | ./highlighter -c BLUE "test" 1> /tmp/stdout.tmp 2> /tmp/stderr.tmp ; diff /tmp/stdout.tmp tests/inputs/empty.txt && diff /tmp/stderr.tmp tests/outputs/matches/0.txt && [ ! -e out.txt ]
+cat tests/inputs/empty.txt | ./highlighter --prefix "(" --postfix ")" "hello" -o out.txt 1> /tmp/stdout.tmp 2> /tmp/stderr.tmp ; [ ! -s /tmp/stdout.tmp ] && diff /tmp/stderr.tmp tests/outputs/matches/0.txt && diff out.txt tests/inputs/empty.txt
+./highlighter -i tests/inputs/newlines.txt "none" 1> /tmp/stdout.tmp 2> /tmp/stderr.tmp ; diff /tmp/stdout.tmp tests/inputs/newlines.txt && diff /tmp/stderr.tmp tests/outputs/matches/0.txt && [ ! -e out.txt ]
+./highlighter -i tests/inputs/newlines.txt --prefix "--! " "hello" -o out.txt 1> /tmp/stdout.tmp 2> /tmp/stderr.tmp ; [ ! -s /tmp/stdout.tmp ] && diff /tmp/stderr.tmp tests/outputs/matches/0.txt && diff out.txt tests/inputs/newlines.txt
+cat tests/inputs/newlines.txt | ./highlighter -c RED "test" 1> /tmp/stdout.tmp 2> /tmp/stderr.tmp ; diff /tmp/stdout.tmp tests/inputs/newlines.txt && diff /tmp/stderr.tmp tests/outputs/matches/0.txt && [ ! -e out.txt ]
+cat tests/inputs/newlines.txt | ./highlighter --prefix "(" --postfix ")" "hello" -o out.txt 1> /tmp/stdout.tmp 2> /tmp/stderr.tmp ; [ ! -s /tmp/stdout.tmp ] && diff /tmp/stderr.tmp tests/outputs/matches/0.txt && diff out.txt tests/inputs/newlines.txt
+./highlighter -i tests/inputs/multiline.txt -c WHITE "a" 1> /tmp/stdout.tmp 2> /tmp/stderr.tmp ; diff /tmp/stdout.tmp tests/outputs/multiline1.stdout && diff /tmp/stderr.tmp tests/outputs/matches/10.txt && [ ! -e out.txt ]
+./highlighter -i tests/inputs/multiline.txt --prefix "\\" --postfix "/" "2" -o out.txt 1> /tmp/stdout.tmp 2> /tmp/stderr.tmp ; [ ! -s /tmp/stdout.tmp ] && diff /tmp/stderr.tmp tests/outputs/matches/2.txt && diff out.txt tests/outputs/multiline2.txt
+cat tests/inputs/multiline.txt | ./highlighter -c MAGENTA "s" 1> /tmp/stdout.tmp 2> /tmp/stderr.tmp ; diff /tmp/stdout.tmp tests/outputs/multiline3.stdout && diff /tmp/stderr.tmp tests/outputs/matches/8.txt && [ ! -e out.txt ]
+cat tests/inputs/multiline.txt | ./highlighter "  " -o out.txt 1> /tmp/stdout.tmp 2> /tmp/stderr.tmp ; [ ! -s /tmp/stdout.tmp ] && diff /tmp/stderr.tmp tests/outputs/matches/0.txt && diff out.txt tests/inputs/multiline.txt
+./highlighter -i tests/inputs/verylong.txt "with various content and patterns" 1> /tmp/stdout.tmp 2> /tmp/stderr.tmp ; diff /tmp/stdout.tmp tests/outputs/verylong1.stdout && diff /tmp/stderr.tmp tests/outputs/matches/100.txt && [ ! -e out.txt ]
+./highlighter -i tests/inputs/verylong.txt -c CYAN "." -o out.txt 1> /tmp/stdout.tmp 2> /tmp/stderr.tmp ; [ ! -s /tmp/stdout.tmp ] && diff /tmp/stderr.tmp tests/outputs/matches/100.txt && diff out.txt tests/outputs/verylong2.txt
+cat tests/inputs/verylong.txt | ./highlighter -c MAGENTA "line 8" 1> /tmp/stdout.tmp 2> /tmp/stderr.tmp ; diff /tmp/stdout.tmp tests/outputs/verylong3.stdout && diff /tmp/stderr.tmp tests/outputs/matches/11.txt && [ ! -e out.txt ]
+cat tests/inputs/verylong.txt | ./highlighter --no-color --prefix "---------! " " 88 " -o out.txt 1> /tmp/stdout.tmp 2> /tmp/stderr.tmp ; [ ! -s /tmp/stdout.tmp ] && diff /tmp/stderr.tmp tests/outputs/matches/1.txt && diff out.txt tests/outputs/verylong4.txt
+./highlighter -i tests/inputs/test.txt "test" 1> /tmp/stdout.tmp 2> /tmp/stderr.tmp ; diff /tmp/stdout.tmp tests/outputs/test1.stdout && diff /tmp/stderr.tmp tests/outputs/matches/11.txt && [ ! -e out.txt ]
+./highlighter -i tests/inputs/test.txt -c YELLOW "te" -o out.txt 1> /tmp/stdout.tmp 2> /tmp/stderr.tmp ; [ ! -s /tmp/stdout.tmp ] && diff /tmp/stderr.tmp tests/outputs/matches/13.txt && diff out.txt tests/outputs/test2.txt
+cat tests/inputs/test.txt | ./highlighter -c WHITE "notfound" 1> /tmp/stdout.tmp 2> /tmp/stderr.tmp ; diff /tmp/stdout.tmp tests/inputs/test.txt && diff /tmp/stderr.tmp tests/outputs/matches/0.txt && [ ! -e out.txt ]
+cat tests/inputs/test.txt | ./highlighter --postfix "}}} " "ste" -o out.txt 1> /tmp/stdout.tmp 2> /tmp/stderr.tmp ; [ ! -s /tmp/stdout.tmp ] && diff /tmp/stderr.tmp tests/outputs/matches/2.txt && diff out.txt tests/outputs/test4.txt
+./highlighter -i tests/inputs/aaa.txt "nomatch" 1> /tmp/stdout.tmp 2> /tmp/stderr.tmp ; diff /tmp/stdout.tmp tests/inputs/aaa.txt && diff /tmp/stderr.tmp tests/outputs/matches/0.txt && [ ! -e out.txt ]
+./highlighter -i tests/inputs/aaa.txt "aaa" -c GREEN 1> /tmp/stdout.tmp 2> /tmp/stderr.tmp ; diff /tmp/stdout.tmp tests/outputs/aaa2.stdout && diff /tmp/stderr.tmp tests/outputs/matches/56.txt && [ ! -e out.txt ]
+cat tests/inputs/aaa.txt | ./highlighter "aaaaaaaaaaaaaa" -c BLUE --prefix ">>>" --postfix "<<<" 1> /tmp/stdout.tmp 2> /tmp/stderr.tmp ; diff /tmp/stdout.tmp tests/outputs/aaa3.stdout && diff /tmp/stderr.tmp tests/outputs/matches/8.txt && [ ! -e out.txt ]
+cat tests/inputs/aaa.txt | ./highlighter --no-color "aa" -o out.txt 1> /tmp/stdout.tmp 2> /tmp/stderr.tmp ; [ ! -s /tmp/stdout.tmp ] && diff /tmp/stderr.tmp tests/outputs/matches/85.txt && diff out.txt tests/outputs/aaa4.txt
+./highlighter -i tests/inputs/simple_story.txt "an" 1> /tmp/stdout.tmp 2> /tmp/stderr.tmp ; diff /tmp/stdout.tmp tests/outputs/simple_story1.stdout && diff /tmp/stderr.tmp tests/outputs/matches/7.txt && [ ! -e out.txt ]
+./highlighter -i tests/inputs/simple_story.txt -c GREEN --no-color "fox" -o out.txt 1> /tmp/stdout.tmp 2> /tmp/stderr.tmp ; [ ! -s /tmp/stdout.tmp ] && diff /tmp/stderr.tmp tests/outputs/matches/1.txt && diff out.txt tests/outputs/simple_story2.txt
+cat tests/inputs/simple_story.txt | ./highlighter -c BLUE " " --prefix "|" --postfix "|" 1> /tmp/stdout.tmp 2> /tmp/stderr.tmp ; diff /tmp/stdout.tmp tests/outputs/simple_story3.stdout && diff /tmp/stderr.tmp tests/outputs/matches/120.txt && [ ! -e out.txt ]
+cat tests/inputs/simple_story.txt | ./highlighter "Sizes.Multiple" -o out.txt 1> /tmp/stdout.tmp 2> /tmp/stderr.tmp ; [ ! -s /tmp/stdout.tmp ] && diff /tmp/stderr.tmp tests/outputs/matches/0.txt && diff out.txt tests/inputs/simple_story.txt
+./highlighter -i tests/inputs/lorem_upsum_long.txt "Lorem ipsum dolor sit amet" 1> /tmp/stdout.tmp 2> /tmp/stderr.tmp ; diff /tmp/stdout.tmp tests/outputs/lorem_upsum_long1.stdout && diff /tmp/stderr.tmp tests/outputs/matches/12.txt && [ ! -e out.txt ]
+./highlighter -i tests/inputs/lorem_upsum_long.txt -c GREEN "per" --postfix "io" -o out.txt 1> /tmp/stdout.tmp 2> /tmp/stderr.tmp ; [ ! -s /tmp/stdout.tmp ] && diff /tmp/stderr.tmp tests/outputs/matches/96.txt && diff out.txt tests/outputs/lorem_upsum_long2.txt
+cat tests/inputs/lorem_upsum_long.txt | ./highlighter -c MAGENTA "." 1> /tmp/stdout.tmp 2> /tmp/stderr.tmp ; diff /tmp/stdout.tmp tests/outputs/lorem_upsum_long3.stdout && diff /tmp/stderr.tmp tests/outputs/matches/600.txt && [ ! -e out.txt ]
+cat tests/inputs/lorem_upsum_long.txt | ./highlighter " " --postfix "<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<" -o out.txt 1> /tmp/stdout.tmp 2> /tmp/stderr.tmp ; [ ! -s /tmp/stdout.tmp ] && diff /tmp/stderr.tmp tests/outputs/matches/4793.txt && diff out.txt tests/outputs/lorem_upsum_long4.txt
+
+
+# valgrind inputs
+# 15 Section
+valgrind --log-file=valgrind_output1.log -v --leak-check=full --error-exitcode=1 --errors-for-leak-kinds=all ./highlighter -i tests/inputs/multiline.txt -c WHITE "a" 1> /tmp/stdout.tmp 2> /tmp/stderr.tmp && diff /tmp/stdout.tmp tests/outputs/multiline1.stdout && diff /tmp/stderr.tmp tests/outputs/matches/10.txt && [ ! -e out.txt ]
+valgrind --log-file=valgrind_output2.log -v --leak-check=full --error-exitcode=1 --errors-for-leak-kinds=all ./highlighter -i tests/inputs/multiline.txt --prefix "\\" --postfix "/" "2" -o out.txt 1> /tmp/stdout.tmp 2> /tmp/stderr.tmp && [ ! -s /tmp/stdout.tmp ] && diff /tmp/stderr.tmp tests/outputs/matches/2.txt && diff out.txt tests/outputs/multiline2.txt
+valgrind --log-file=valgrind_output3.log -v --leak-check=full --error-exitcode=1 --errors-for-leak-kinds=all ./highlighter -i tests/inputs/empty.txt --no-color "hello" -o out.txt 1> /tmp/stdout.tmp 2> /tmp/stderr.tmp && [ ! -s /tmp/stdout.tmp ] && diff /tmp/stderr.tmp tests/outputs/matches/0.txt && diff out.txt tests/inputs/empty.txt
+valgrind --log-file=valgrind_output4.log -v --leak-check=full --error-exitcode=1 --errors-for-leak-kinds=all ./highlighter -i tests/inputs/lorem_upsum_long.txt "Lorem ipsum dolor sit amet" 1> /tmp/stdout.tmp 2> /tmp/stderr.tmp && diff /tmp/stdout.tmp tests/outputs/lorem_upsum_long1.stdout && diff /tmp/stderr.tmp tests/outputs/matches/12.txt && [ ! -e out.txt ]
