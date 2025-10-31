@@ -4,7 +4,7 @@ In this assignment, you are going to implement your own CLI program called `high
 
 ## Accepting the Assignment
 
-[Click here to accept this assignment](github.com). Once you accept the invitation, GitHub will create a private repository containing the starter files for the assignment. You will also find an accompanying `README.md`, which is essentially this document you are reading, useful for instructions and further details.
+[Click here to accept this assignment](https://classroom.github.com/a/XaEz5NDb). Once you accept the invitation, GitHub will create a private repository containing the starter files for the assignment. You will also find an accompanying `README.md`, which is essentially this document you are reading, useful for instructions and further details.
 
 
 ## Details
