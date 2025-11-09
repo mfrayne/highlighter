@@ -20,19 +20,82 @@ static const char* COLOR_CYAN = "\033[0;36m";
 static const char* COLOR_WHITE = "\033[1;37m";
 static const char* COLOR_RESET_COLOR = "\033[0m";
 
+//settings for highlighting determined by cli command options
+typedef struct Settings{
+        char* input_file;
+        char* output_file;
+        char* color;
+        int no_color;
+        char* prefix;
+        char* postfix;
+        char* text;
+} settings_t;
 
 // These function prototypes / definitions are suggestions but not required to implement.
 // typedef struct Settings with fields FILE*/handle input_stream, output_stream; strings search_text, prefix, postfix; and boolean no_color;
-// void print_help()
-// void print_error(const char* error_message)
-// void output_final_result(int count, const char* search_text)
-// const char* get_color_code(const char* color_str)
-// int process_args(int argc, char* argv[], Settings* settings)
-// int parse_line(Settings* settings, char* line)
+void print_help();
+void print_error(const char* error_message);
+void output_final_result(int count, const char* search_text);
+const char* get_color_code(const char* color_str);
+int process_args(int argc, char* argv[], settings_t* settings);
+int parse_line(settings_t* settings, char* line);
+//int full_write(int fd,void* data,size_t data_size);
+//int full_read(int fd,void* data,size_t data_size)
 // ...
 
 
 int main(int argc, char *argv[]) {
-    // TODO: implement the highlighter program
-    return 0;
+	//parse arguements - get everything from cli arguments and make sure everythings checks out
+	//read input from file specified
+	//find matches in file
+	//add codes to highlight with specified color 
+	//write output to stdout or specified file
+	//write statistics to stdERR
+	
+	settings_t settings = {"","","",0,"","","",};
+
+	process_args(argc,argv,&settings);
+	return 0;
 }
+
+
+int process_args(int argc,char* argv[], settings_t* settings){
+	for (int i = 1; i < argc; i++) {
+    		if (strncmp(argv[i], "-h\0",3) == 0 || strncmp(argv[i], "--help",7) == 0) {
+        		print_help();
+			return 0;
+    		}
+	}
+}
+
+
+void print_help(){
+	printf("usage: ./highlighter [-h] [-i INPUT] [-o OUTPUT] [-c {RED,GREEN,BLUE,YELLOW,MAGENTA,CYAN,WHITE}]");
+		printf("[--no-color] [--prefix PREFIX] [--postfix POSTFIX] text\n");
+	printf("\n");
+	printf("highlighter\n");
+	printf("\n");
+	printf("positional arguments:\n");
+	printf("  text			text to match and highlight\n");
+	printf("\n");
+	printf("options:\n");
+	printf("  -h, --help		show this help message and exit\n");
+	printf("  -i INPUT, --input INPUT\n");
+	printf("			input file (default:stdin)\n");
+	printf("  -o OUTPUT, --output OUTPUT\n");
+	printf("			output file (default:stdout)\n");
+	printf("  -c {RED,GREEN,BLUE,YELLOW,MAGENTA,CYAN,WHITE}, --color {RED,GREEN,BLUE,YELLOW,MAGENTA,CYAN,WHITE}\n");
+        printf("			color option (default: RED)\n");
+	printf("  --no-color		do not print color\n");
+	printf("  --prefix PREFIX	print prefix before highlighted text (default: empty string\n");
+	printf("  --postfix POSTFIX	print postfix after highlighted text (default: tempty string\n");
+	printf("\n");
+	printf("examples:\n");
+	printf("  ./highlighter -i file.txt \"error\" (highlishts \"error\" in file.txt in red via STDOUT\n");
+	printf("  ./highlighter\n");
+	printf("  ./highlighter --prefix \">>\" --postfix \"<<\" \"keyword\" -o out.txt (highlights \"keyword\" with"); 
+		printf(" prefix \">>\" and postfix \"<<\" in red from STDIN to out.txt)\n");
+}
+
+
+
