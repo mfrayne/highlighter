@@ -41,49 +41,40 @@ int process_args(int argc, char* argv[], settings_t* settings);
 int parse_line(settings_t* settings, char* line, FILE* output);
 // ...
 
-FILE* open_file(char* path, FILE* file){
-	FILE* return_file = NULL;
-	if(path == NULL){
-                return_file = file;
-        }
-        else{
-		return_file = fopen(path,"r");
-        }
-	return return_file;
-}
 
 int main(int argc, char *argv[]) {
-	//parse arguements - get everything from cli arguments and make sure everythings checks out
-	//read input from file specified
-	//find matches in file
-	//add codes to highlight with specified color 
-	//write output to stdout or specified file
-	//write statistics to stdERR
 	
 	//stores correctly formated arguments from CLI command
-	settings_t settings = {NULL,NULL,COLOR_RED,false,"","","",};
+	settings_t settings = {NULL,NULL,COLOR_RED,false,"","",NULL};
 	//ensures that user inputs CLI command properly
 	process_args(argc,argv,&settings);
-	
-
 	//open files for input and output
 	FILE* in;
 	FILE* out;
-	
 	//input file
-	in = open_file(settings.input_file,stdin);
+	if(settings.input_file == NULL){
+		in = stdin;
+	}
+	else{
+		in = fopen(settings.input_file,"r");
+	}
 	if(in == NULL){
 		print_error("failed to open input file");
 	}
 	
 	//output file
-	out = open_file(settings.output_file,stdout);
+	if(settings.output_file == NULL){
+		out = stdout;
+	}
+	else{
+		out = fopen(settings.output_file,"w");
+	}
 	if(out ==NULL){
-		fclose(out);//print_error terminates program so previously opened files must be closed
+		if(in!=stdin){
+			fclose(in);//print_error terminates program so previously opened files must be closed
+		}
 		print_error("failed to open output file");
 	}
-
-
 	//parse lines of input file and output 
 	char* line = NULL;
 	size_t len = 0;
@@ -91,19 +82,14 @@ int main(int argc, char *argv[]) {
 	//loops through each line rather than reading entire file at once to save memory
 	while(getline(&line,&len,in) != -1){
 		total_matches += parse_line(&settings,line,out);
-
+		fflush(out);
 	}
-	//ensure all memory is handled properly
-	free(line);
 	if(in != stdin){
 		fclose(in);
 	}
 	if(out != stdout){
 		fclose(out);
 	}
-	//test end of stdout
-	//fprintf(stdout,"\nend of stdout\n");
-	//prints out statistics
 	fprintf(stderr,"Highlighted %d matches.\n",total_matches);
 	return 0;
 }
@@ -127,9 +113,9 @@ int parse_line(settings_t* settings, char* line, FILE* output){
 		line = match + strlen(settings->text);
 		match_count++;
 	}
-	fprintf(output,line);
+	fprintf(output,"%s",line);
 	
-	return match_count;
+	return match_count; 
 }
 
 void print_error(const char* error_message){
@@ -138,100 +124,62 @@ void print_error(const char* error_message){
 }
 
 
-//helper function for process_args
-//used to validiate the the file path given is a valid file
-bool is_valid_file(char* path){
-	//check file path for valid file
-	FILE* file = fopen(path,"r");
-	if(file == NULL){
-		return false;
-	}
-	else{
-		fclose(file);
-		return true;
-	}
-}
-int process_args(int argc,char* argv[], settings_t* settings){
-	char* in_path = NULL;
-	char* out_path = NULL;
 
+int process_args(int argc,char* argv[], settings_t* settings){
+
+	if(argc<=1){
+		print_error("no arguments passed");
+	}
+	//loops through all arguments passed through to check if everything was inputed corectly
 	for (int i = 1; i < argc; i++){
-		//prints help menu
-		//seperate from other options because positional argument not needed
-    		if (strncmp(argv[i], "-h\0",3) == 0 || strncmp(argv[i], "--help",6) == 0) {
-                        print_help();
-                        return 0;
-                }
-		//checks for positional argument - text to be highlighted
-		else if(i == argc-1){
-			settings->text = argv[i];
-		}
-		//handles option flags 
-		else{
-			//first becaue it is the only flag besides help that doesn't need an argument
-			//handles no color flag
-			if (strncmp(argv[i], "--no-color",7) == 0) {
+		//handles all flags
+		if(argv[i][0] == '-'){
+			if(strcmp(argv[i], "-h") == 0 || strcmp(argv[i], "--help") == 0){
+				print_help();
+			}
+			else if (strcmp(argv[i], "--no-color") == 0) {
                                 settings->no_color = true;
                         }
-			else if(i>=argc-2){//all following cases should have an argument following the flag
-				//all these flag should not be last or second to last argument
-				//if they are they have not includes the positional argument text
-				print_error("missing positional argument or invalid flag");
+			else if(i==argc-1){
+				print_error("missing flag argument");
 			}
-			//need to validate file
-			else if (strncmp(argv[i], "-i\0",3) == 0 || strncmp(argv[i], "--input",7) == 0) {
-                       		i++;
-				// check following file is valid
-				if(argv[i][0]=='-'){
-                                        print_error("missing argument for -i");
-                                }
-				else if(is_valid_file(argv[i])){
-					in_path = argv[i];
-				}
-				else{
-					print_error("invalid input file path");
-				}
-                	}
-			//need to validate file
-			else if (strncmp(argv[i], "-o\0",3) == 0 || strncmp(argv[i], "--output",7) == 0) {
-                        	//check folling file is valid
-				if(argv[i][0]=='-'){
-					print_error("missing argument for -i");
-				}
-				else if(is_valid_file(argv[i])){
-					out_path = argv[i];
-				}
-                                else{
-					print_error("invalid output file path");
-                                }
-                	}
-			else if (strncmp(argv[i], "-c\0",3) == 0 || strncmp(argv[i], "--color",7) == 0) {
-				//check following color is valid
+			else if(strcmp(argv[i], "-i") == 0 || strcmp(argv[i], "--input") == 0){
 				i++;
-				//get_color_code used to validate input text and translate to correct ANSI color code
+				settings->input_file = argv[i];
+			}
+			else if(strcmp(argv[i], "-o") == 0 || strcmp(argv[i], "--output") == 0){
+				i++;
+				settings->output_file = argv[i];
+			}
+			else if(strcmp(argv[i], "-c") == 0 || strcmp(argv[i], "--color") == 0){
+				i++;
 				settings->color = get_color_code(argv[i]);
-                	}
-			//handles prefix
-			else if (strncmp(argv[i], "--prefix",7) == 0) {
+			}
+			else if(strcmp(argv[i], "--prefix")){
 				i++;
-				//set limit to how long prefix can b
 				settings->prefix = argv[i];
 			}
-			//handles postfix
-			else if (strncmp(argv[i], "--postfix",7) == 0) {
-				//handle postfix
+			else if(strcmp(argv[i], "--postfix") == 0){
 				i++;
 				settings->postfix = argv[i];
 			}
-			else{//handles any errors that result in extra arguments
-				print_error("multiple position arguments/invalid flag");
-				return -1;
+			else{
+				print_error("invalid_flag");
 			}
+		}
+		else if(settings->text==NULL){
+			settings->text = argv[i];
+		}
+		else{
+			print_error("postitoial arguments");
 		}
 	}
 	
-	settings->input_file = in_path;
-	settings->output_file = out_path;
+	
+
+	if(settings->text == NULL||strlen(settings->text)==0){
+		print_error("missing positional argument");
+	}
 
 	return 0;
 }
@@ -266,34 +214,33 @@ void print_help(){
 	printf("  ./highlighter\n");
 	printf("  ./highlighter --prefix \">>\" --postfix \"<<\" \"keyword\" -o out.txt (highlights \"keyword\" with"); 
 		printf(" prefix \">>\" and postfix \"<<\" in red from STDIN to out.txt)\n");
-	exit(0);
+	exit(1);
 }
 
 
 const char* get_color_code(const char* color_str){
-	if(strncmp(color_str,"RED\0",4)){
+	if(strcmp(color_str,"RED")==0){
 		return COLOR_RED;
 	}
-	else if(strncmp(color_str,"GREEN\0",6)){
+	else if(strcmp(color_str,"GREEN")==0){
 		return COLOR_GREEN;
 	}
-	else if(strncmp(color_str,"BLUE\0",6)){
+	else if(strcmp(color_str,"BLUE")==0){
                 return COLOR_BLUE;
         }
-	else if(strncmp(color_str,"YELLOW\0",6)){
+	else if(strcmp(color_str,"YELLOW")==0){
                 return COLOR_YELLOW;
         }
-	else if(strncmp(color_str,"MAGENTA\0",6)){
+	else if(strcmp(color_str,"MAGENTA")==0){
                 return COLOR_MAGENTA;
         }
-	else if(strncmp(color_str,"CYAN\0",6)){
+	else if(strcmp(color_str,"CYAN")==0){
                 return COLOR_CYAN;
         }
-	else if(strncmp(color_str,"WHITE\0",6)){
+	else if(strcmp(color_str,"WHITE")==0){
                 return COLOR_WHITE;
         }
 	else{
 		print_error("invalid color argument");
-		return 0;
 	}
 }
