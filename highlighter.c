@@ -73,14 +73,14 @@ int main(int argc, char *argv[]) {
 	//input file
 	in = open_file(settings.input_file,stdin);
 	if(in == NULL){
-		print_error(strncat("failed to open file at ",settings.input_file,256));
+		print_error("failed to open input file");
 	}
 	
 	//output file
 	out = open_file(settings.output_file,stdout);
 	if(out ==NULL){
 		fclose(out);//print_error terminates program so previously opened files must be closed
-		print_error(strncat("failed to open file at ",settings.output_file,256));
+		print_error("failed to open output file");
 	}
 
 
@@ -102,7 +102,7 @@ int main(int argc, char *argv[]) {
 		fclose(out);
 	}
 	//test end of stdout
-	fprintf(stdout,"\nend of stdout\n");
+	//fprintf(stdout,"\nend of stdout\n");
 	//prints out statistics
 	fprintf(stderr,"Highlighted %d matches.\n",total_matches);
 	return 0;
@@ -110,17 +110,8 @@ int main(int argc, char *argv[]) {
 
 
 int parse_line(settings_t* settings, char* line, FILE* output){
-	//search line character by character for matches
-	//use for loop and strcmp
-	//add each character to a new string
-	//when match reached
-		//add prefix to output
-		//add color code if no color = 0
-		//add work
-		//add reset color code
-		//add postfix
-		//increase index by word length
-	//
+	
+
 	int line_length = strlen(line);
 	int text_length = strlen(settings->text);
 	int match_count = 0;
@@ -185,7 +176,7 @@ int process_args(int argc,char* argv[], settings_t* settings){
 			else if(i>=argc-2){//all following cases should have an argument following the flag
 				//all these flag should not be last or second to last argument
 				//if they are they have not includes the positional argument text
-				print_error("missing positional argument");
+				print_error("missing positional argument or invalid flag");
 			}
 			//need to validate file
 			else if (strncmp(argv[i], "-i\0",3) == 0 || strncmp(argv[i], "--input",7) == 0) {
@@ -198,7 +189,7 @@ int process_args(int argc,char* argv[], settings_t* settings){
 					in_path = argv[i];
 				}
 				else{
-					print_error(strncat("issue opening file at ",argv[i],10));
+					print_error("invalid input file path");
 				}
                 	}
 			//need to validate file
@@ -211,7 +202,7 @@ int process_args(int argc,char* argv[], settings_t* settings){
 					out_path = argv[i];
 				}
                                 else{
-					print_error(strncat("issue opening file at ",argv[i],10));
+					print_error("invalid output file path");
                                 }
                 	}
 			else if (strncmp(argv[i], "-c\0",3) == 0 || strncmp(argv[i], "--color",7) == 0) {
@@ -233,7 +224,7 @@ int process_args(int argc,char* argv[], settings_t* settings){
 				settings->postfix = argv[i];
 			}
 			else{//handles any errors that result in extra arguments
-				print_error(strncat("multiple position arguments/invalid flag ",argv[i],10));
+				print_error("multiple position arguments/invalid flag");
 				return -1;
 			}
 		}
@@ -302,7 +293,7 @@ const char* get_color_code(const char* color_str){
                 return COLOR_WHITE;
         }
 	else{
-		print_error(strncat("invalid color argument ",color_str,10));
+		print_error("invalid color argument");
 		return 0;
 	}
 }
