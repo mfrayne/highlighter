@@ -22,8 +22,8 @@ static const char* COLOR_RESET_COLOR = "\033[0m";
 
 //settings for highlighting determined by cli command options
 typedef struct Settings{
-        FILE* input_file;
-        FILE* output_file;
+        char* input_file;
+        char* output_file;
         const char* color;
         bool no_color;
         char* prefix;
@@ -38,9 +38,19 @@ void print_error(const char* error_message);
 void output_final_result(int count, const char* search_text);
 const char* get_color_code(const char* color_str);
 int process_args(int argc, char* argv[], settings_t* settings);
-int parse_line(settings_t* settings, char* line);
+int parse_line(settings_t* settings, char* line, FILE* output);
 // ...
 
+FILE* open_file(char* path, FILE* file){
+	FILE* return_file = NULL;
+	if(path == NULL){
+                return_file = file;
+        }
+        else{
+		return_file = fopen(path,"r");
+        }
+	return return_file;
+}
 
 int main(int argc, char *argv[]) {
 	//parse arguements - get everything from cli arguments and make sure everythings checks out
@@ -50,31 +60,56 @@ int main(int argc, char *argv[]) {
 	//write output to stdout or specified file
 	//write statistics to stdERR
 	
-	settings_t settings = {stdin,stdout,COLOR_RED,0,"","","",};
-
+	//stores correctly formated arguments from CLI command
+	settings_t settings = {NULL,NULL,COLOR_RED,false,"","","",};
+	//ensures that user inputs CLI command properly
 	process_args(argc,argv,&settings);
 	
-	FILE* in = fopen(settings->intput_file,"r");
-	FILE* out = fopen(settings->output_file,"w");
+
+	//open files for input and output
+	FILE* in;
+	FILE* out;
+	
+	//input file
+	in = open_file(settings.input_file,stdin);
+	if(in == NULL){
+		print_error(strncat("failed to open file at ",settings.input_file,256));
+	}
+	
+	//output file
+	out = open_file(settings.output_file,stdout);
+	if(out ==NULL){
+		fclose(out);//print_error terminates program so previously opened files must be closed
+		print_error(strncat("failed to open file at ",settings.output_file,256));
+	}
 
 
+	//parse lines of input file and output 
 	char* line = NULL;
-	int len = 0;
+	size_t len = 0;
 	int total_matches = 0;
+	//loops through each line rather than reading entire file at once to save memory
 	while(getline(&line,&len,in) != -1){
-		//parses each line
-		total_matches += parse_line(settings,line);
+		total_matches += parse_line(&settings,line,out);
 
 	}
+	//ensure all memory is handled properly
 	free(line);
-	close(in);
-	close(out);
+	if(in != stdin){
+		fclose(in);
+	}
+	if(out != stdout){
+		fclose(out);
+	}
+	//test end of stdout
+	fprintf(stdout,"\nend of stdout\n");
+	//prints out statistics
 	fprintf(stderr,"Highlighted %d matches.\n",total_matches);
 	return 0;
 }
 
-/*
-int parse_line(settings_t* settings, char* line){
+
+int parse_line(settings_t* settings, char* line, FILE* output){
 	//search line character by character for matches
 	//use for loop and strcmp
 	//add each character to a new string
@@ -91,24 +126,29 @@ int parse_line(settings_t* settings, char* line){
 	int match_count = 0;
 	char* match = NULL;
 	while((match = strstr(line,settings->text)) != NULL){
-		fprintf(settings->output_file,)
+		fprintf(output,"%.*s%s",(int)(match-line),line,settings->prefix);
+		if(!settings->no_color){
+			fprintf(output,"%s",settings->color);	
+		}
+		fprintf(output,"%s%s%s",settings->text,COLOR_RESET_COLOR,settings->postfix);
 		
 		
 		line = match + strlen(settings->text);
 		match_count++;
-		//check for text in line
 	}
-
+	fprintf(output,line);
+	
+	return match_count;
 }
-*/
+
 void print_error(const char* error_message){
-	fprintf(stderr,"Error: %s",error_message);
+	fprintf(stderr,"Error: %s\n",error_message);
 	exit(-1);
 }
 
 
 //helper function for process_args
-//used to valididate the the file path given is a valid file
+//used to validiate the the file path given is a valid file
 bool is_valid_file(char* path){
 	//check file path for valid file
 	FILE* file = fopen(path,"r");
@@ -140,7 +180,7 @@ int process_args(int argc,char* argv[], settings_t* settings){
 			//first becaue it is the only flag besides help that doesn't need an argument
 			//handles no color flag
 			if (strncmp(argv[i], "--no-color",7) == 0) {
-                                settings->no_color = 1;
+                                settings->no_color = true;
                         }
 			else if(i>=argc-2){//all following cases should have an argument following the flag
 				//all these flag should not be last or second to last argument
@@ -199,14 +239,8 @@ int process_args(int argc,char* argv[], settings_t* settings){
 		}
 	}
 	
-	//files opened at end of loop to ensure that all arguments are correct
-	//input and output files stored in settings to be closed later
-	if(in_path!=NULL){
-		settings->input_file = fopen(in_path,"r");
-	}
-	if(out_path != NULL){
-		settings->output_file = fopen(out_path,"w");
-	}
+	settings->input_file = in_path;
+	settings->output_file = out_path;
 
 	return 0;
 }
