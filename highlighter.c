@@ -84,6 +84,7 @@ int main(int argc, char *argv[]) {
 		total_matches += parse_line(&settings,line,out);
 		fflush(out);
 	}
+	free(line);
 	if(in != stdin){
 		fclose(in);
 	}
@@ -107,8 +108,11 @@ int parse_line(settings_t* settings, char* line, FILE* output){
 		if(!settings->no_color){
 			fprintf(output,"%s",settings->color);	
 		}
-		fprintf(output,"%s%s%s",settings->text,COLOR_RESET_COLOR,settings->postfix);
-		
+		fprintf(output,"%s",settings->text);
+		if(!settings->no_color){
+			fprintf(output,"%s",COLOR_RESET_COLOR);
+		}
+		fprintf(output,"%s",settings->postfix);
 		
 		line = match + strlen(settings->text);
 		match_count++;
@@ -155,7 +159,7 @@ int process_args(int argc,char* argv[], settings_t* settings){
 				i++;
 				settings->color = get_color_code(argv[i]);
 			}
-			else if(strcmp(argv[i], "--prefix")){
+			else if(strcmp(argv[i], "--prefix")==0){
 				i++;
 				settings->prefix = argv[i];
 			}
