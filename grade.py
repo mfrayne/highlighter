@@ -20,7 +20,7 @@ TIMEOUT_SECS = 5.0
 
 def cleanup_before_test():
     # Ignore errors if paths do not exist
-    for p in ["out.txt", "/tmp/stdout.tmp", "/tmp/stderr.tmp"]:
+    for p in ["out.txt", "stdout.tmp", "stderr.tmp"]:
         try:
             os.remove(p)
         except FileNotFoundError:

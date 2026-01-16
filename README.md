@@ -1,3 +1,7 @@
+# Attribution
+# This project was originally developed as a course project for PSU CMPSC 311
+# The following in the description provided for the assignment
+#
 # highlighter Programming Assignment
 
 In this assignment, you are going to implement your own CLI program called `highlighter` which utilizes many aspects of IO in C and Linux/Unix. You'll get experience using file descriptors or streams, different IO patterns, string functions, error handling, and argument parsing.
