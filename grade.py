@@ -1,3 +1,10 @@
+# DISCLAIMER
+# This program is the autograder used a part of a university course project
+# All code and changes in this file was provided to me by the instructor
+# Non of the code in this file is my own
+
+
+
 #!/usr/bin/env python3
 
 import os

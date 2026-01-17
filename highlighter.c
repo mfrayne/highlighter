@@ -1,3 +1,36 @@
+/* 
+ * DISCLAIMER:
+ * This program was developed as part of a university course project
+ * The project requirements and instructions are outlined in the README file of this project
+ * This program demonstrates understanding in basic C conecpts, I/O, and CLI argument parsing
+ * All implementation, logic, and code structure are my own work.
+ *
+ * This program takes an input file and text to be highlighted
+ * It then procudes an output file matching the input file with all matches to the input text highlighted
+ * The number of matches are provided to the user through stderr
+ * Further details can be found in README
+ *
+ * Psuedo code:
+ *
+ * Main:
+ * 	settings struct is created with defualt values
+ * 	cli arguements are parsed
+ * 		settings are changed based on flags provided
+ *		if anything doesn't follow provided format error is printed and program exits
+ *		after all arguments are checked files are opened if specified
+ *	lines from input file are parsed
+ *		match is found in input file
+ *		text before match is printed to ouput
+ *		color code and matching text is printed to output 
+ *		once all matches are found the remaining text is printed to output
+ *	dyanmic memory freed
+ *	input and output files are closed if nessecary
+ *	matches to text in input file are printed to stderr
+ *
+ * 	
+*/ 
+
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -162,7 +195,7 @@ int process_args(int argc,char* argv[], settings_t* settings){
 			}
 		}
 		else if(settings->text==NULL){
-			//
+			//positional argument set if not alreay set
 			settings->text = argv[i];
 		}
 		else{
