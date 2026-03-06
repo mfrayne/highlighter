@@ -1,5 +1,16 @@
 # Highlighter Programming Assignment
 This is a CLI program that takes ascii text input and outputs the same text with specified text highlighted in a color with optional prefixes and postfixes to add before a after highlighted text. This project is written in C and uses only standard libraries.
+## Features
+## Features
+- Highlight specified text in ASCII input from the command line
+- Read input from a file (`-i`) or standard input (`stdin`)
+- Write output to a file (`-o`) or standard output (`stdout`)
+- Highlight matches using ANSI colors (`RED`, `GREEN`, `BLUE`, `YELLOW`, `MAGENTA`, `CYAN`, `WHITE`)
+- Option to disable colors with `--no-color`
+- Optional `--prefix` and `--postfix` text around highlighted matches
+- Finds all non-overlapping matches line-by-line
+- Displays the total number of matches after execution
+- Implemented in C using only standard libraries
 ## Requirements
 - C compiler (gcc or equivalent)
 No external libraries are required
@@ -13,7 +24,7 @@ Once in the correct directory clone the repository.
 ```bash
 git clone https://github.com/mfrayne/highlighter.git
 ```
-## Running
+## Usage
 Compile the program:
 ```bash
 gcc highlighter.c -o highlighter
