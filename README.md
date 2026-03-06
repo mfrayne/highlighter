@@ -1,7 +1,6 @@
 # Highlighter Programming Assignment
 This is a CLI program that takes ascii text input and outputs the same text with specified text highlighted in a color with optional prefixes and postfixes to add before a after highlighted text. This project is written in C and uses only standard libraries.
 ## Features
-## Features
 - Highlight specified text in ASCII input from the command line
 - Read input from a file (`-i`) or standard input (`stdin`)
 - Write output to a file (`-o`) or standard output (`stdout`)
